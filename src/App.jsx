@@ -1,35 +1,75 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
+import { useAuth } from './context/AuthContext'
 
-function App() {
-  const [count, setCount] = useState(0)
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import DashboardPage from './pages/DashboardPage'
+import ProductsPage from './pages/ProductsPage'
+import CartPage from './pages/CartPage'
+import ProfilePage from './pages/ProfilePage'
+import DashboardLayout from './components/layout/DashboardLayout'
 
+function PrivateRoute({ children }) {
+  const { isAuthenticated } = useAuth()
+  return isAuthenticated ? children : <Navigate to="/login" replace />
+}
+
+function PublicRoute({ children }) {
+  const { isAuthenticated } = useAuth()
+  return isAuthenticated ? <Navigate to="/dashboard" replace /> : children
+}
+
+export default function App() {
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            fontFamily: 'DM Sans, sans-serif',
+            borderRadius: '12px',
+            fontSize: '14px',
+          },
+        }}
+      />
+      <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <DashboardLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="cart" element={<CartPage />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </>
   )
 }
-
-export default App

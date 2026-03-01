@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
+import { Analytics } from '@vercel/analytics/react'
 import { useAuth } from './context/AuthContext'
 
 import LoginPage from './pages/LoginPage'
@@ -33,6 +34,7 @@ export default function App() {
           },
         }}
       />
+      <Analytics />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
 
